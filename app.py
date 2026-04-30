@@ -29,19 +29,18 @@ st.markdown(
 st.markdown("---")
 
 # -------------------------------
-# MODEL HANDLING (DEPLOYMENT FIX)
+# MODEL HANDLING (FINAL CLEAN)
 # -------------------------------
 MODEL_PATH = "models/best_model.pkl"
 
+# Train only if model doesn't exist
 if not os.path.exists(MODEL_PATH):
-    st.warning("⚙️ Model not found. Training model... Please wait.")
-
-    try:
-        model = train_model()
-        st.success("✅ Model trained successfully!")
-    except Exception as e:
-        st.error(f"❌ Training failed: {e}")
-        st.stop()
+    with st.spinner("⚙️ Training model for first time..."):
+        try:
+            model = train_model()
+        except Exception as e:
+            st.error(f"❌ Training failed: {e}")
+            st.stop()
 else:
     try:
         model = joblib.load(MODEL_PATH)
