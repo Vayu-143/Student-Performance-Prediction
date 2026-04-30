@@ -29,11 +29,10 @@ st.markdown(
 st.markdown("---")
 
 # -------------------------------
-# MODEL HANDLING (FINAL CLEAN)
+# MODEL HANDLING
 # -------------------------------
 MODEL_PATH = "models/best_model.pkl"
 
-# Train only if model doesn't exist
 if not os.path.exists(MODEL_PATH):
     with st.spinner("⚙️ Training model for first time..."):
         try:
@@ -47,6 +46,11 @@ else:
     except Exception as e:
         st.error(f"❌ Failed to load model: {e}")
         st.stop()
+
+# -------------------------------
+# USER INSTRUCTION
+# -------------------------------
+st.markdown("👉 Adjust the inputs and click **Predict Performance**")
 
 # -------------------------------
 # INPUT SECTION
@@ -84,14 +88,20 @@ if st.button("🚀 Predict Performance"):
     try:
         prediction = model.predict(input_data)[0]
 
+        # Clamp prediction between 0–100
+        prediction = max(0, min(100, prediction))
+
         st.success(f"🎯 Predicted Score: {prediction:.2f}")
 
-        if prediction > 100:
+        if prediction > 90:
             st.info("🚀 Excellent performance")
-        elif prediction > 80:
+        elif prediction > 75:
             st.info("👍 Good performance")
         else:
             st.warning("📚 Needs improvement")
+
+        # Explanation
+        st.caption("Prediction is based on a trained regression model using synthetic student data.")
 
     except Exception as e:
         st.error(f"❌ Prediction failed: {e}")
