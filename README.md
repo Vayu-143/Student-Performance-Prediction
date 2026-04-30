@@ -80,10 +80,10 @@ The model uses the following features:
 ## 📈 Visualizations
 
 ### 🔹 Model Comparison
-![model_comparison](outputs/model_comparison.png)
+![Model Comparison](outputs/model_comparison.png)
 
 ### 🔹 Scatter Plot
-![scatter_plot](outputs/scatter_plot.png)
+![Scatter Plot](outputs/scatter_plot.png)
 
 ---
 
