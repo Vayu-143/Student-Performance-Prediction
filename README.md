@@ -76,7 +76,7 @@ The model uses the following features:
 ## 📈 Visualizations
 
 ### 🔹 Model & Data Insights
-![Graphs](output/model_comparison.png)
+![Model Comparison](output/model_comparison.png)
 
 ### 🔹 Scatter Plot
 ![Scatter Plot](outputs/scatter_plot.png)
