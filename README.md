@@ -80,10 +80,10 @@ The model uses the following features:
 ## 📈 Visualizations
 
 ### 🔹 Model Comparison
-![Model Comparison](outputs/model_comparison.png)
+![Model Comparison](https://raw.githubusercontent.com/Vayu-143/Student-Performance-Prediction/main/outputs/model_comparison.png)
 
 ### 🔹 Scatter Plot
-![Scatter Plot](outputs/scatter_plot.png)
+![Scatter Plot](https://raw.githubusercontent.com/Vayu-143/Student-Performance-Prediction/main/outputs/scatter_plot.png)
 
 ---
 
