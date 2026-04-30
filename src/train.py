@@ -1,62 +1,71 @@
 import pandas as pd
-import joblib
 import os
-
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
+import joblib
 
-# Load data
-data = pd.read_csv("data/student_data.csv")
 
-X = data.drop("final_score", axis=1)
-y = data["final_score"]
+def train_model():
+    # -------------------------------
+    # Create folders if not exist
+    # -------------------------------
+    os.makedirs("models", exist_ok=True)
+    os.makedirs("data", exist_ok=True)
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
+    # -------------------------------
+    # If dataset not exists → create it
+    # -------------------------------
+    data_path = "data/student_data.csv"
 
-# Models
-lr = LinearRegression()
-rf = RandomForestRegressor(n_estimators=100, random_state=42)
+    if not os.path.exists(data_path):
+        import numpy as np
 
-# Train
-lr.fit(X_train, y_train)
-rf.fit(X_train, y_train)
+        np.random.seed(42)
+        n = 200
 
-# Predict
-lr_pred = lr.predict(X_test)
-rf_pred = rf.predict(X_test)
+        data = pd.DataFrame({
+            "study_hours": np.random.uniform(1, 10, n),
+            "attendance": np.random.uniform(50, 100, n),
+            "sleep_hours": np.random.uniform(4, 9, n),
+            "previous_marks": np.random.uniform(40, 90, n),
+            "social_media_hours": np.random.uniform(1, 5, n),
+            "mental_health_score": np.random.uniform(1, 10, n),
+        })
 
-# Evaluate
-lr_mse = mean_squared_error(y_test, lr_pred)
-rf_mse = mean_squared_error(y_test, rf_pred)
+        # Target variable
+        data["final_score"] = (
+            5 * data["study_hours"]
+            + 0.3 * data["attendance"]
+            + 2 * data["sleep_hours"]
+            + 0.5 * data["previous_marks"]
+            - 2 * data["social_media_hours"]
+            + 1.5 * data["mental_health_score"]
+            + np.random.normal(0, 5, n)
+        )
 
-print(f"Linear Regression MSE: {lr_mse}")
-print(f"Random Forest MSE: {rf_mse}")
+        data.to_csv(data_path, index=False)
 
-# Select best model
-best_model = rf if rf_mse < lr_mse else lr
-model_name = "Random Forest" if rf_mse < lr_mse else "Linear Regression"
+    # -------------------------------
+    # Load dataset
+    # -------------------------------
+    df = pd.read_csv(data_path)
 
-print(f"✅ Best Model: {model_name}")
+    X = df.drop("final_score", axis=1)
+    y = df["final_score"]
 
-# Save model
-os.makedirs("models", exist_ok=True)
-joblib.dump(best_model, "models/best_model.pkl")
+    # -------------------------------
+    # Train model
+    # -------------------------------
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
 
-# Save metrics
-metrics = {
-    "Linear Regression": lr_mse,
-    "Random Forest": rf_mse
-}
+    model = LinearRegression()
+    model.fit(X_train, y_train)
 
-joblib.dump(metrics, "models/metrics.pkl")
+    # -------------------------------
+    # Save model
+    # -------------------------------
+    joblib.dump(model, "models/best_model.pkl")
 
-# Feature Importance (only for RF)
-if model_name == "Random Forest":
-    importance = rf.feature_importances_
-    joblib.dump(importance, "models/feature_importance.pkl")
-
-print("✅ Training completed!")
+    return model

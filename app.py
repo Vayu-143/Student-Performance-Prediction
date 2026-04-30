@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import os
+from src.train import train_model
 
 # -------------------------------
 # PAGE CONFIG
@@ -12,7 +14,7 @@ st.set_page_config(
 )
 
 # -------------------------------
-# CLEAN HEADER (NO BANNER)
+# HEADER
 # -------------------------------
 st.markdown(
     """
@@ -27,13 +29,25 @@ st.markdown(
 st.markdown("---")
 
 # -------------------------------
-# LOAD MODEL
+# MODEL HANDLING (DEPLOYMENT FIX)
 # -------------------------------
-try:
-    model = joblib.load("models/best_model.pkl")
-except:
-    st.error("❌ Model not found! Please run training first.")
-    st.stop()
+MODEL_PATH = "models/best_model.pkl"
+
+if not os.path.exists(MODEL_PATH):
+    st.warning("⚙️ Model not found. Training model... Please wait.")
+
+    try:
+        model = train_model()
+        st.success("✅ Model trained successfully!")
+    except Exception as e:
+        st.error(f"❌ Training failed: {e}")
+        st.stop()
+else:
+    try:
+        model = joblib.load(MODEL_PATH)
+    except Exception as e:
+        st.error(f"❌ Failed to load model: {e}")
+        st.stop()
 
 # -------------------------------
 # INPUT SECTION
@@ -73,7 +87,6 @@ if st.button("🚀 Predict Performance"):
 
         st.success(f"🎯 Predicted Score: {prediction:.2f}")
 
-        # Feedback
         if prediction > 100:
             st.info("🚀 Excellent performance")
         elif prediction > 80:
@@ -82,7 +95,7 @@ if st.button("🚀 Predict Performance"):
             st.warning("📚 Needs improvement")
 
     except Exception as e:
-        st.error(f"❌ Error during prediction: {e}")
+        st.error(f"❌ Prediction failed: {e}")
 
 # -------------------------------
 # FOOTER
